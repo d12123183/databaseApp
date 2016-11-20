@@ -1,0 +1,21 @@
+{
+    "prepare_queue": {
+        "installed": [],
+        "uninstalled": []
+    },
+    "config_munge": {
+        "files": {}
+    },
+    "installed_plugins": {
+        "cordova-plugin-whitelist": {
+            "PACKAGE_NAME": "com.mydomain.db"
+        },
+        "cordova-plugin-device": {
+            "PACKAGE_NAME": "com.mydomain.db"
+        },
+        "cordova-plugin-sqlite": {
+            "PACKAGE_NAME": "com.mydomain.db"
+        }
+    },
+    "dependent_plugins": {}
+}

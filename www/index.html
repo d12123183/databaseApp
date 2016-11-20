@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+    <title>Note</title>
+
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+
+</head>
+<body>
+
+<!-- put jQuery mobile pages here -->
+
+<script type="text/javascript" src="cordova.js"></script>
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+<script type="text/javascript">
+    var db = null;
+
+    document.addEventListener("deviceready", function(){
+        db = window.sqlitePlugin.openDatabase({name: "note.db"});
+        db.transaction(function(tx) {
+            tx.executeSql("CREATE TABLE IF NOT EXISTS note (name text primary key, data text)");
+        }, function(err){
+            alert("An error occurred while initializing the app");
+        });
+    }, false);
+
+
+    function add()
+    {
+        var name = document.getElementById("name").value;
+        var text = document.getElementById("note-text").value;
+
+        if(name == "")
+        {
+            alert("Please enter name");
+            return;
+        }
+
+        if(text == "")
+        {
+            alert("Please enter text");
+            return;
+        }
+
+        db.transaction(function(tx) {
+            tx.executeSql("INSERT INTO note (name, data) VALUES (?,?)", [name, text], function(tx,res){
+                alert("Note Added");
+            });
+        }, function(err){
+            alert("An error occured while saving the note");
+        });
+    }
+
+
+
+    $(document).on("pagebeforeshow", "#display", function(){
+        db.transaction(function(tx) {
+            tx.executeSql("SELECT (name) FROM note", [], function(tx,res){
+                for(var iii = 0; iii < res.rows.length; iii++)
+                {
+                    document.getElementById("data-list").innerHTML = document.getElementById("data-list").innerHTML + "<li><a href='javascript:displayNote(\"" + res.rows.item(iii).name + "\")'>" + res.rows.item(iii).name + "</a></li>";
+                }
+            });
+        }, function(err){
+            alert("An error occured while displaying saved notes");
+        });
+    });
+
+
+
+    function displayNote(name)
+    {
+        db.transaction(function(tx) {
+            tx.executeSql("SELECT * FROM note WHERE name = ?", [name], function(tx,res){
+                var name = res.rows.item(0).name;
+                var data = res.rows.item(0).data;
+
+                document.getElementById("note-title").innerHTML = name;
+                document.getElementById("note-data").innerHTML = data;
+
+                $.mobile.changePage("#single-note");
+            });
+        }, function(err){
+            alert(err.message);
+            alert("An error occured while displaying the note");
+        });
+    }
+</script>
+
+
+<div data-role="page" id="home">
+    <div data-role="header">
+        <h1>Home</h1>
+    </div>
+
+    <div data-role="main" class="ui-content">
+        <p>
+            <a target="_blank" href="#add" style="text-decoration: none"><button>Add Note</button></a>
+            <a target="_blank" href="#display" style="text-decoration: none"><button>Display Notes</button></a>
+        </p>
+    </div>
+</div>
+
+
+
+
+<div data-role="page" id="add">
+    <div data-role="header">
+        <a target="_blank" href="#home" class="ui-btn ui-icon-home ui-btn-icon-left">Home</a>
+        <h1>ADD</h1>
+    </div>
+
+    <div data-role="main" class="ui-content">
+        <input type="text" id="name" placeholder="Enter Name" />
+        <textarea id="note-text" placeholder="Place text here"></textarea>
+        <a target="_blank" href="javascript:add()" style="text-decoration: none"><button>Add Note</button></a>
+    </div>
+</div>
+
+
+
+<div data-role="page" id="display">
+    <div data-role="header">
+        <a target="_blank" href="#home" class="ui-btn ui-icon-home ui-btn-icon-left">Home</a>
+        <h1>NOTES</h1>
+    </div>
+
+    <div data-role="main" class="ui-content">
+        <ul id="data-list">
+        </ul>
+    </div>
+</div>
+
+
+<div data-role="page" id="single-note">
+    <div data-role="header">
+        <a target="_blank" href="#display" class="ui-btn ui-icon-home ui-btn-icon-left">All</a>
+        <h1 id="note-title"></h1>
+    </div>
+
+    <div data-role="main" class="ui-content">
+        <p id="note-data"></p>
+    </div>
+</div>
+
+
+</body>
+</html>
