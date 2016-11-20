@@ -10,6 +10,9 @@
     <feature name="SQLitePlugin">
         <param name="android-package" value="io.liteglue.SQLitePlugin" />
     </feature>
+    <feature name="SQLitePlugin">
+        <param name="android-package" value="io.sqlc.SQLitePlugin" />
+    </feature>
     <name>db</name>
     <description>
         A sample Apache Cordova application that responds to the deviceready event.

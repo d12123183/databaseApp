@@ -16,6 +16,11 @@ module.exports = [
             "window.sqlitePlugin",
             "cordova.plugins.sqlitePlugin"
         ]
+    },
+    {
+        "id": "cordova-sqlite-plugin.SQLite",
+        "file": "plugins/cordova-sqlite-plugin/www/sqlite.js",
+        "pluginId": "cordova-sqlite-plugin"
     }
 ];
 module.exports.metadata = 
@@ -23,7 +28,8 @@ module.exports.metadata =
 {
     "cordova-plugin-whitelist": "1.3.0",
     "cordova-plugin-device": "1.1.3",
-    "cordova-plugin-sqlite": "1.0.3"
+    "cordova-plugin-sqlite": "1.0.3",
+    "cordova-sqlite-plugin": "3.1.1"
 };
 // BOTTOM OF METADATA
 });
