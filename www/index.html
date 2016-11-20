@@ -11,16 +11,20 @@
 
 <!-- put jQuery mobile pages here -->
 
+
 <script type="text/javascript" src="cordova.js"></script>
 <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
 <script type="text/javascript">
+
+
+    //step 1
     var db = null;
 
     document.addEventListener("deviceready", function(){
-        db = window.sqlitePlugin.openDatabase({name: "note.db", location: 'default'});
+        db = window.sqlitePlugin.openDatabase({name: "note.db", createFromLocation: 1});
         db.transaction(function(tx) {
-            tx.executeSql("CREATE TABLE IF NOT EXISTS campus (id integer primary key, room text, x integer, y integer)");
+            tx.executeSql("CREATE TABLE IF NOT EXISTS note (name text primary key, data text)");
         }, function(err){
             alert("An error occurred while initializing the app");
         });
@@ -29,14 +33,12 @@
 
     function add()
     {
-        var id = document.getElementById("id").value;
-        var room = document.getElementById("room").value;
-        var x = document.getElementById("x").value;
-        var y = document.getElementById("y").value;
+        var name = document.getElementById("name").value;
+        var text = document.getElementById("note-text").value;
 
         if(name == "")
         {
-            alert("Please enter id");
+            alert("Please enter name");
             return;
         }
 
@@ -47,19 +49,18 @@
         }
 
         db.transaction(function(tx) {
-            tx.executeSql("INSERT INTO note (id, room, x , y) VALUES (?,?,?,?)", [id, room, x, y], function(tx,res){
-                alert("Room Details Added");
+            tx.executeSql("INSERT INTO note (name, data) VALUES (?,?)", [name, text], function(tx,res){
+                alert("Note Added");
             });
         }, function(err){
-            alert("An error occured while saving the room details");
+            alert("An error occured while saving the note");
         });
     }
 
 
-
     $(document).on("pagebeforeshow", "#display", function(){
         db.transaction(function(tx) {
-            tx.executeSql("SELECT (id) FROM campus", [], function(tx,res){
+            tx.executeSql("SELECT (name) FROM note", [], function(tx,res){
                 for(var iii = 0; iii < res.rows.length; iii++)
                 {
                     document.getElementById("data-list").innerHTML = document.getElementById("data-list").innerHTML + "<li><a href='javascript:displayNote(\"" + res.rows.item(iii).name + "\")'>" + res.rows.item(iii).name + "</a></li>";
@@ -71,20 +72,15 @@
     });
 
 
-
-    function displayNote(id)
+    function displayNote(name)
     {
         db.transaction(function(tx) {
-            tx.executeSql("SELECT * FROM note WHERE name = ?", [id], function(tx,res){
-                var id = res.rows.item(0).id;
-                var room = res.rows.item(0).room;
-                var x = res.rows.item(0).x;
-                var y = res.rows.item(0).y;
+            tx.executeSql("SELECT * FROM note WHERE name = ?", [name], function(tx,res){
+                var name = res.rows.item(0).name;
+                var data = res.rows.item(0).data;
 
-                document.getElementById("ID").innerHTML = id;
-                document.getElementById("Room").innerHTML = room;
-                document.getElementById("X").innerHTML = x;
-                document.getElementById("Y").innerHTML = y;
+                document.getElementById("note-title").innerHTML = name;
+                document.getElementById("note-data").innerHTML = data;
 
                 $.mobile.changePage("#single-note");
             });
@@ -93,7 +89,15 @@
             alert("An error occured while displaying the note");
         });
     }
+
+
+
+
+
+
+
 </script>
+
 
 
 <div data-role="page" id="home">
@@ -103,8 +107,8 @@
 
     <div data-role="main" class="ui-content">
         <p>
-            <a target="_blank" href="#add" style="text-decoration: none"><button>Add Room</button></a>
-            <a target="_blank" href="#display" style="text-decoration: none"><button>Display Room</button></a>
+            <a target="_blank" href="#add" style="text-decoration: none"><button>Add Note</button></a>
+            <a target="_blank" href="#display" style="text-decoration: none"><button>Display Notes</button></a>
         </p>
     </div>
 </div>
@@ -119,14 +123,11 @@
     </div>
 
     <div data-role="main" class="ui-content">
-        <input type="text" id="id" placeholder="Enter id" />
-        <textarea id="room" placeholder="Room"></textarea>
-        <textarea id="x" placeholder="x value"></textarea>
-        <textarea id="y" placeholder="y value"></textarea>
+        <input type="text" id="name" placeholder="Enter Name" />
+        <textarea id="note-text" placeholder="Place text here"></textarea>
         <a target="_blank" href="javascript:add()" style="text-decoration: none"><button>Add Note</button></a>
     </div>
 </div>
-
 
 
 <div data-role="page" id="display">
@@ -142,6 +143,8 @@
 </div>
 
 
+
+
 <div data-role="page" id="single-note">
     <div data-role="header">
         <a target="_blank" href="#display" class="ui-btn ui-icon-home ui-btn-icon-left">All</a>
@@ -152,6 +155,12 @@
         <p id="note-data"></p>
     </div>
 </div>
+
+
+
+
+
+
 
 
 </body>
