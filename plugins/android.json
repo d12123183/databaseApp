@@ -18,6 +18,9 @@
         },
         "cordova-sqlite-plugin": {
             "PACKAGE_NAME": "com.mydomain.db"
+        },
+        "cordova-sqlite-ext": {
+            "PACKAGE_NAME": "com.mydomain.db"
         }
     },
     "dependent_plugins": {}
